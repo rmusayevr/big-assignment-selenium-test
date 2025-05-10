@@ -7,7 +7,6 @@ import tests.HistoryTests;
 import tests.HoverTests;
 import tests.InteractionsTests;
 import tests.JavascriptTests;
-// import tests.LoginTests;
 import tests.MultiPageTests;
 import tests.RandomContactTests;
 
@@ -24,7 +23,6 @@ import org.junit.runners.Suite;
         HoverTests.class,
         InteractionsTests.class,
         JavascriptTests.class,
-        // LoginTests.class,
         MultiPageTests.class,
         RandomContactTests.class,
 
