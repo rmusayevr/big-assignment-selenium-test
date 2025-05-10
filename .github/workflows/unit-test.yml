@@ -1,14 +1,19 @@
 jobs:
-  unit-test:
+  selenium-tests:
     runs-on: ubuntu-latest
+    services:
+      selenium:
+        image: selenium/standalone-chrome-debug:3.11.0-californium
+        ports:
+          - 4444:4444
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Chrome
-        uses: browser-actions/setup-chrome@v1
+      - name: Set up Java & Gradle
+        uses: gradle/gradle-build-action@v2
 
-      - name: Run Gradle tests
-        run: |
-          google-chrome --version
-          gradle test
+      - name: Run tests
+        env:
+          SELENIUM_URL: http://localhost:4444/wd/hub
+        run: gradle test
