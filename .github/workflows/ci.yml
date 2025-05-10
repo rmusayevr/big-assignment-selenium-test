@@ -31,20 +31,27 @@ jobs:
       - name: Start Docker Compose services
         run: |
           docker-compose up -d
-          # Wait for Selenium to be ready
-          until docker run --rm --network host curlimages/curl curl -s http://localhost:4444/wd/hub/status | grep '"ready": true'; do
+          # Debug: Check container status
+          docker ps -a
+          docker logs big-assignment-selenium-test-selenium-1
+          # Wait for Selenium to be ready with timeout
+          timeout 300 sh -c 'until docker run --rm --network big-assignment-selenium-test_default curlimages/curl curl -s http://selenium:4444/wd/hub/status | grep "\"ready\": true"; do
             echo "Waiting for Selenium to be ready..."
             sleep 2
-          done
+          done' || { echo "Selenium failed to become ready"; docker logs big-assignment-selenium-test-selenium-1; exit 1; }
 
       - name: Run Gradle tests
         run: |
           docker run --rm \
-            --network host \
+            --network big-assignment-selenium-test_default \
             -v $(pwd):/home/selenium/project \
             -w /home/selenium/project \
             custom-ubuntu \
             gradle test --no-daemon
+
+      - name: Clean up Docker Compose
+        if: always()
+        run: docker-compose down
 
       - name: Upload test results
         if: always()
