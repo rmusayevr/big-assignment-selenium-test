@@ -46,10 +46,19 @@ public class LoginTests {
         System.out.println("PASSWORD: " + password);
         loginPage.fillLoginFormAndSubmit(email, password);
 
-        WebDriverWait wait = new WebDriverWait(driver, 15);
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlContains("sign_in")));
-
-        assertTrue("Should be on dashboard after login", driver.getCurrentUrl().contains("courses.ultimateqa.com") && !driver.getCurrentUrl().contains("sign_in"));
+        WebDriverWait wait = new WebDriverWait(driver, 30);
+        try {
+            System.out.println("Waiting for URL to change...");
+            wait.until(ExpectedConditions.urlContains("courses.ultimateqa.com"));
+            System.out.println("Current URL: " + driver.getCurrentUrl());
+            assertTrue("Should be on dashboard after login",
+                driver.getCurrentUrl().contains("courses.ultimateqa.com") &&
+                !driver.getCurrentUrl().contains("sign_in"));
+        } catch (Exception e) {
+            System.err.println("Timeout waiting for URL change. Current URL: " + driver.getCurrentUrl());
+            System.err.println("Page source: " + driver.getPageSource());
+            throw e;
+        }
     }
 
     @Test
