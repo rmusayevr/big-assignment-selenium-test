@@ -1,18 +1,14 @@
-name: Run Unit Tests
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
 jobs:
   unit-test:
     runs-on: ubuntu-latest
 
-    container:
-      image: gradle:8.0.2
-
     steps:
       - uses: actions/checkout@v3
-      - run: gradle test
+
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Run Gradle tests
+        run: |
+          google-chrome --version
+          gradle test
