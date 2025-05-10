@@ -15,26 +15,26 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
-      - name: Set up Chrome and ChromeDriver
+      - name: Set up Chrome and ChromeDriver (Ubuntu 24.04 compatible)
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget unzip xvfb libxi6 libgconf-2-4 libappindicator1 libindicator7
+          sudo apt-get install -y wget unzip xvfb libxi6 libatk-bridge2.0-0 libgtk-3-0
+
+          # Install Chrome
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
 
+          # Get matching ChromeDriver version
           CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+' | head -1)
-          echo "Detected Chrome version: $CHROME_VERSION"
-          
           MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d '.' -f 1)
-          echo "Using major version: $MAJOR_VERSION"
-
           DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$MAJOR_VERSION")
-          echo "Resolved ChromeDriver version: $DRIVER_VERSION"
 
+          # Install ChromeDriver
           wget "https://chromedriver.storage.googleapis.com/$DRIVER_VERSION/chromedriver_linux64.zip"
           unzip chromedriver_linux64.zip
           sudo mv chromedriver /usr/local/bin/
           sudo chmod +x /usr/local/bin/chromedriver
+
 
 
       - name: Grant execution permissions
