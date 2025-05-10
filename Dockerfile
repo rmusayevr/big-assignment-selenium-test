@@ -26,14 +26,20 @@ ENV PATH=$PATH:$GRADLE_HOME/bin:$JAVA_HOME/bin
 
 RUN apt-get update && apt-get install -y sudo
 
+# Create selenium user
 RUN username="selenium" && \
-    addgroup -gid 1000 $username && \
+    addgroup --gid 1000 $username && \
     mkdir -p "/home/$username" && \
     cp -a /root/. "/home/$username" && \
     adduser --uid 1000 --home "/home/$username" --gid 1000 --quiet --disabled-password --gecos "Mr. $username User,,,"  $username && \
     usermod -p "Q4oQmhJG0ctkM" $username && \
-    sudo usermod -a -G sudo $username && \
-    chown -R "$username.$username" "/home/$username"
+    usermod -a -G sudo $username && \
+    chown -R "$username:$username" "/home/$username"
+
+# Create and set permissions for project directory
+RUN mkdir -p /home/selenium/project && \
+    chown -R selenium:selenium /home/selenium/project && \
+    chmod -R 775 /home/selenium/project
 
 ENV TZ=Europe/Budapest
 ENV DEBIAN_FRONTEND=noninteractive

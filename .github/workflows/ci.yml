@@ -40,6 +40,11 @@ jobs:
             sleep 2
           done' || { echo "Selenium failed to become ready"; docker logs big-assignment-selenium-test-selenium-1; exit 1; }
 
+      - name: Fix permissions for project directory
+        run: |
+          sudo chown -R 1000:1000 $(pwd)
+          sudo chmod -R u+rwX $(pwd)
+
       - name: Run Gradle tests
         run: |
           docker run --rm \
