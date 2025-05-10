@@ -14,13 +14,26 @@ public class DriverFactory {
         if (driver == null) {
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--headless");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
             options.addArguments("--disable-notifications");
-            try {
-                driver = new RemoteWebDriver(new URL("http://selenium:4444/wd/hub"), options);
-                driver.manage().window().maximize();
-            } catch (MalformedURLException e) {
-                throw new RuntimeException("Failed to connect to Selenium hub", e);
+
+            // Check if running in CI
+            String isCI = System.getenv("CI");
+            if ("true".equalsIgnoreCase(isCI)) {
+                // Use local ChromeDriver in GitHub Actions
+                driver = new ChromeDriver(options);
+            } else {
+                // Use RemoteWebDriver for Docker
+                try {
+                    driver = new RemoteWebDriver(new URL("http://selenium:4444/wd/hub"), options);
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException("Failed to connect to Selenium hub", e);
+                }
             }
+
+            driver.manage().window().maximize();
         }
         return driver;
     }
