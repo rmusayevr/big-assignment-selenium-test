@@ -19,18 +19,10 @@ public class DriverFactory {
             options.addArguments("--disable-dev-shm-usage");
             options.addArguments("--disable-notifications");
 
-            // Check if running in CI
-            String isCI = System.getenv("CI");
-            if ("true".equalsIgnoreCase(isCI)) {
-                // Use local ChromeDriver in GitHub Actions
-                driver = new ChromeDriver(options);
-            } else {
-                // Use RemoteWebDriver for Docker
-                try {
-                    driver = new RemoteWebDriver(new URL("http://selenium:4444/wd/hub"), options);
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException("Failed to connect to Selenium hub", e);
-                }
+            try {
+                driver = new RemoteWebDriver(new URL("http://selenium:4444/wd/hub"), options);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException("Failed to connect to Selenium hub", e);
             }
 
             driver.manage().window().maximize();
