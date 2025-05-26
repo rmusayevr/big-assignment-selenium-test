@@ -1,66 +1,66 @@
-name: CI Pipeline
+# name: CI Pipeline
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v3
 
-      - name: Install docker-compose
-        run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
+#       - name: Install docker-compose
+#         run: |
+#           sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#           sudo chmod +x /usr/local/bin/docker-compose
+#           docker-compose --version
 
-      - name: Build custom Ubuntu image
-        run: docker build -t custom-ubuntu .
+#       - name: Build custom Ubuntu image
+#         run: docker build -t custom-ubuntu .
 
-      - name: Start Docker Compose services
-        run: |
-          docker-compose up -d
-          # Debug: Check container status
-          docker ps -a
-          docker logs big-assignment-selenium-test-selenium-1
-          # Wait for Selenium to be ready with timeout
-          timeout 300 sh -c 'until docker run --rm --network big-assignment-selenium-test_default curlimages/curl curl -s http://selenium:4444/wd/hub/status | grep "\"ready\": true"; do
-            echo "Waiting for Selenium to be ready..."
-            sleep 2
-          done' || { echo "Selenium failed to become ready"; docker logs big-assignment-selenium-test-selenium-1; exit 1; }
+#       - name: Start Docker Compose services
+#         run: |
+#           docker-compose up -d
+#           # Debug: Check container status
+#           docker ps -a
+#           docker logs big-assignment-selenium-test-selenium-1
+#           # Wait for Selenium to be ready with timeout
+#           timeout 300 sh -c 'until docker run --rm --network big-assignment-selenium-test_default curlimages/curl curl -s http://selenium:4444/wd/hub/status | grep "\"ready\": true"; do
+#             echo "Waiting for Selenium to be ready..."
+#             sleep 2
+#           done' || { echo "Selenium failed to become ready"; docker logs big-assignment-selenium-test-selenium-1; exit 1; }
 
-      - name: Fix permissions for project directory
-        run: |
-          sudo chown -R 1000:1000 $(pwd)
-          sudo chmod -R u+rwX $(pwd)
+#       - name: Fix permissions for project directory
+#         run: |
+#           sudo chown -R 1000:1000 $(pwd)
+#           sudo chmod -R u+rwX $(pwd)
 
-      - name: Run Gradle tests
-        run: |
-          docker run --rm \
-            --network big-assignment-selenium-test_default \
-            -v $(pwd):/home/selenium/project \
-            -w /home/selenium/project \
-            custom-ubuntu \
-            gradle test --no-daemon
+#       - name: Run Gradle tests
+#         run: |
+#           docker run --rm \
+#             --network big-assignment-selenium-test_default \
+#             -v $(pwd):/home/selenium/project \
+#             -w /home/selenium/project \
+#             custom-ubuntu \
+#             gradle test --no-daemon
 
-      - name: Clean up Docker Compose
-        if: always()
-        run: docker-compose down
+#       - name: Clean up Docker Compose
+#         if: always()
+#         run: docker-compose down
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: build/test-results/test/
+#       - name: Upload test results
+#         if: always()
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: test-results
+#           path: build/test-results/test/

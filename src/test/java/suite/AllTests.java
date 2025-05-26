@@ -4,8 +4,10 @@ import tests.ContactTests;
 import tests.CookieTests;
 import tests.DropdownTests;
 import tests.HistoryTests;
+import tests.HoverTests;
 import tests.InteractionsTests;
 import tests.JavascriptTests;
+import tests.LoginTests;
 import tests.MultiPageTests;
 import tests.RandomContactTests;
 
@@ -19,8 +21,10 @@ import org.junit.runners.Suite;
         CookieTests.class,
         DropdownTests.class,
         HistoryTests.class,
+        HoverTests.class,
         InteractionsTests.class,
         JavascriptTests.class,
+        LoginTests.class,
         MultiPageTests.class,
         RandomContactTests.class,
 
